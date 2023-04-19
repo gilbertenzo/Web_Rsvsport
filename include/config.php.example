@@ -1,0 +1,89 @@
+<?php
+
+setlocale(LC_ALL, 'fr_FR.utf8');
+date_default_timezone_set("Europe/Paris");
+
+$loginmysql = 'root';
+$passmysql = '';
+$hostmysql = 'localhost';
+$dbmysql = 'rsvsport';
+
+$hostsmtp = "";
+$smtpcontact = "";
+$smtppassword = "";
+$smtpport = "";
+
+// Variable Globale mysqli & test de connexion base 
+$mysqli = new mysqli($hostmysql, $loginmysql, $passmysql, $dbmysql);
+$mysqli->set_charset('utf8');
+if ($mysqli->connect_error) {
+  die('Erreur de connexion (' . $mysqli->connect_errno . ')' . $mysqli->connect_error);
+}
+
+// tab stade
+$_SESSION['stade'] = array();
+$_SESSION['stadeina'] = array();
+$_SESSION['allstade'] = array();
+$sqlstade = "select id_stade, nom_type as type, nom, lundi, mardi, mercredi, jeudi, vendredi, samedi, dimanche, dateend, actif, timestamp from stade s INNER JOIN stadetype t on s.id_type_stade = t.id_type_stade;";
+$reqsqlstade = $mysqli->query($sqlstade) or die('Erreur ' . $sqlstade . ' ' . $mysqli->error);
+while ($row = mysqli_fetch_assoc($reqsqlstade)) {
+
+  $_SESSION['allstade'][] = $row;
+
+  if (!empty($row)) {
+    if ($row['actif'] == "1") {
+
+      $_SESSION['stade'][] = $row;
+
+    } else if ($row['actif'] == "0") {
+
+      $_SESSION['stadeina'][] = $row;
+    }
+  }
+}
+
+// tab event 
+$_SESSION['event'] = array();
+$_SESSION['ckevent'] = array();
+$_SESSION['ckidevent'] = array();
+$_SESSION['ckideventthis'] = array();
+$sqlevent = "select id_event, id_user, s.nom as nom_stade, t.nom_type as type_stade, date_start, date_end, commentaire, e.timestamp from event e INNER JOIN stade s on s.id_stade = e.id_stade INNER JOIN stadetype t on t.id_type_stade = e.id_type_stade";
+$reqsqlevent = $mysqli->query($sqlevent) or die('Erreur ' . $sqlevent . ' ' . $mysqli->error);
+while ($row = mysqli_fetch_assoc($reqsqlevent)) {
+  if (!empty($row)) {
+    $_SESSION['event'][] = $row;
+    $_SESSION['ckevent'][] = $row['nom_stade'] . ' ' . $row['date_start'] . ' ' . $row['date_end'];
+    $_SESSION['ckidevent'][] = $row['id_user'] . ' ' . $row['date_start'] . ' ' . $row['date_end'];
+    $_SESSION['ckideventthis'][] = $row['id_user'] . ' ' . $row['nom_stade'] . ' ' . $row['date_start'] . ' ' . $row['date_end'];
+  }
+}
+
+// tab users
+$_SESSION['users'] = array();
+$sqlusers = "select id_user, nom, prenom, password, email, token, tel, adresse, actif, nom_groups as groups ,timestamp from users u INNER JOIN groups g on u.id_groups = g.id_groups;";
+$reqsqlusers = $mysqli->query($sqlusers) or die('Erreur ' . $sqlusers . ' ' . $mysqli->error);
+while ($row = mysqli_fetch_assoc($reqsqlusers)) {
+  if (!empty($row)) {
+    $_SESSION['users'][] = $row;
+  }
+}
+
+// function globale
+// genere liste date depuis now jusqu'a $end
+function getDatesFromRange($end, $format = 'Y-m-d') {
+
+  $array = array();
+  $interval = new DateInterval('P1D');
+  $realEnd = new DateTime($end);
+  $realEnd->add($interval);
+
+  $period = new DatePeriod(new DateTime(date('Y-m-d')), $interval, $realEnd);
+
+  foreach ($period as $date) {
+    $array[] = $date->format($format);
+  }
+  return $array;
+}
+
+
+?>
