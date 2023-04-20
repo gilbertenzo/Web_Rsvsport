@@ -272,16 +272,9 @@ if (is_ajax()) {
 
 			$sqlsubcote = "update stade set nom = '$msnom', id_type_stade = '$mstype', actif = '$msstatus', dateend = '$msdateend', lundi = '$mslundi', mardi = '$msmardi', mercredi = '$msmercredi', jeudi = '$msjeudi', vendredi = '$msvendredi', samedi = '$mssamedi', dimanche = '$msdimanche' where id_stade = '$msidstatde' ";
 			if ($mysqli->query($sqlsubcote)) {
-
-				// renommer aussi tous les events si le nom du stade à changé
-				$sqlsubcoteb = "update event set nom_stade = '$msnom' where nom_stade = '$lastmsnom'";
-				if ($mysqli->query($sqlsubcoteb)) {
-					echo json_encode(["data" => "ok"]);
-					exit;
-				} else {
-					echo json_encode(["data" => "ko"]);
-					exit;
-				}
+				echo json_encode(["data" => "ok"]);
+				exit;
+			
 			} else {
 				echo json_encode(["data" => "ko"]);
 				exit;
@@ -346,6 +339,23 @@ if (is_ajax()) {
 			$msdidstade = $_POST['msdidstade'];
 
 			$sqlsubcote = "delete from stade where id_stade = '$msdidstade' ";
+			if ($mysqli->query($sqlsubcote)) {
+				echo json_encode(["data" => "ok"]);
+				exit;
+			} else {
+				echo json_encode(["data" => "ko"]);
+				exit;
+			}
+		}
+	}
+		
+	if ($action == 'delstadetype') {
+
+		if ($_SESSION['user']['authentification'] == "1" && $_SESSION['user']['group'] == "admin") {
+
+			$msdidstadetype = $_POST['msdidstadetype'];
+
+			$sqlsubcote = "delete from stadetype where id_type_stade = '$msdidstadetype' ";
 			if ($mysqli->query($sqlsubcote)) {
 				echo json_encode(["data" => "ok"]);
 				exit;

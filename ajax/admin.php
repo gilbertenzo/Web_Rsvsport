@@ -12,7 +12,7 @@ if (is_ajax()) {
   global $mysqli;
 
   if ($_SESSION['user']['authentification'] == "1" && $_SESSION['user']['group'] == "admin") {
-  
+    
 ?>
 
 
@@ -84,8 +84,11 @@ if (is_ajax()) {
                     <td> ' . $crow['groups'] . ' </td>
                     <td> 
                     	<a title="Modifier" data-bs-toggle="modal"  data-ajaction="modifuser" data-action="Modification utilisateur" data-iduser="' . $crow['id_user'] . '" data-nom="' . $crow['nom'] . '"  data-prenom="' . $crow['prenom'] . '"  data-email="' . $crow['email'] . '" data-tel="' . $crow['tel'] . '" data-addresse="' . $crow['adresse'] . '" data-actif="' . $crow['actif'] . '" data-group="' . $sgroups . '" data-bs-target="#moduser" class="btn btn-outline-info bi-person-fill-gear"></a>';
+                    	$ckv = array_search($crow['id_user'], array_column($_SESSION['event'], 'id_user'));
                     	if ( $crow['email'] == $_SESSION['user']['email'] ) {
                     	      echo '<a title="Supprimer" class="btn btn-outline-secondary bi-person-x-fill disabled" disabled></a>'; 
+                    	} elseif ( $ckv !== false ) {
+                    	      echo '<a title="Impossible de supprimer des réservations existe pour cet utilisateur" class="btn btn-outline-danger bi-lock-fill disabled" disabled></a>'; 
                     	} else {
                     	      echo '<a title="Supprimer" data-bs-toggle="modal"  data-iduser="' . $crow['id_user'] . '"  data-bs-target="#deluser" class="btn btn-outline-danger bi-person-x-fill"></a>'; 
      			}
@@ -158,9 +161,14 @@ if (is_ajax()) {
                     <td> ' . $crow['dateend'] . ' </td>
                     <td> ' . $statuss . ' </td>
                     <td> 
-                    	<a title="Modifier" data-bs-toggle="modal"  data-ajaction="modifstade" data-action="Modification stade" data-idstade="' . $crow['id_stade'] . '" data-type="' . $crow['type'] . '"  data-nom="' . $crow['nom'] . '"  data-lundi="' . $crow['lundi'] . '" data-mardi="' . $crow['mardi'] . '" data-mercredi="' . $crow['mercredi'] . '" data-jeudi="' . $crow['jeudi'] . '" data-vendredi="' . $crow['vendredi'] . '" data-samedi="' . $crow['samedi'] . '" data-dimanche="' . $crow['dimanche'] . '" data-dateend="' . $crow['dateend'] . '" data-actif="' . $crow['actif'] . '"data-bs-target="#modstade" class="btn btn-outline-info bi-gear-fill"></a>
-                    	<a title="Supprimer" data-bs-toggle="modal"  data-idstade="' . $crow['id_stade'] . '"  data-bs-target="#delstade" class="btn btn-outline-danger bi-trash-fill"></a>                   
-                    </td>
+                    	<a title="Modifier" data-bs-toggle="modal"  data-ajaction="modifstade" data-action="Modification stade" data-idstade="' . $crow['id_stade'] . '" data-type="' . $crow['type'] . '"  data-nom="' . $crow['nom'] . '"  data-lundi="' . $crow['lundi'] . '" data-mardi="' . $crow['mardi'] . '" data-mercredi="' . $crow['mercredi'] . '" data-jeudi="' . $crow['jeudi'] . '" data-vendredi="' . $crow['vendredi'] . '" data-samedi="' . $crow['samedi'] . '" data-dimanche="' . $crow['dimanche'] . '" data-dateend="' . $crow['dateend'] . '" data-actif="' . $crow['actif'] . '"data-bs-target="#modstade" class="btn btn-outline-info bi-gear-fill"></a>';
+                    	$ckv = array_search($crow['nom'], array_column($_SESSION['event'], 'nom_stade'));
+                    	if ( $ckv !== false ) {
+                    	//if (in_array($crow['nom'], $_SESSION['event'])) {
+                    		echo '<a title="Impossible de supprimer des réservations existe pour ce stade" class="btn btn-outline-secondary bi-lock-fill"></a>'; 
+                    	} else {
+                    		echo '<a title="Supprimer" data-bs-toggle="modal"  data-idstade="' . $crow['id_stade'] . '"  data-bs-target="#delstade" class="btn btn-outline-danger bi-trash-fill"></a>';                    }
+                    echo '</td>
                     
                     </tr>';
                   }
@@ -203,10 +211,15 @@ if (is_ajax()) {
                         echo '<td>Inactif</td>';
                     }
                     echo '<td> 
-                    	<a title="Modifier" data-bs-toggle="modal"  data-ajaction="modifstadetype" data-action="Modification type de stade" data-idstadetype="' . $crow['id_type_stade'] . '" data-nomtype="' . $crow['nom_type'] . '"  data-statustype="' . $crow['type_actif'] . '" data-bs-target="#modstadetype" class="btn btn-outline-info bi-gear-fill"></a>
-                    </td>
-                    
-                    </tr>';
+                    	<a title="Modifier" data-bs-toggle="modal"  data-ajaction="modifstadetype" data-action="Modification type de stade" data-idstadetype="' . $crow['id_type_stade'] . '" data-nomtype="' . $crow['nom_type'] . '"  data-statustype="' . $crow['type_actif'] . '" data-bs-target="#modstadetype" class="btn btn-outline-info bi-gear-fill"></a>';
+                    $ckv = array_search($crow['nom_type'], array_column($_SESSION['event'], 'type_stade'));
+                    if ( $ckv !== false ) {
+                    	echo '<a title="Impossible de supprimer des réservations existe pour ce type de stade" class="btn btn-outline-secondary bi-lock-fill"></a>'; 
+                    } else {
+                    	echo '<a title="Supprimer" data-bs-toggle="modal"  data-idstadetype="' . $crow['id_type_stade'] . '"  data-bs-target="#delstadetype" class="btn btn-outline-danger bi-trash-fill"></a>';
+                    }
+
+                    echo '</td></tr>';
                   }
 
                   ?>
@@ -453,6 +466,22 @@ if (is_ajax()) {
       </div>
     </div>
     
+    <div class="modal fade" id="delstadetype" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Confirmation la suppression ? </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <input type="text" class="form-control hidden" id="msdidstadetype">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+            <button type="button" class="btn btn-danger" id="delstadetypesub">Supprimer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
 
     <script>
     
@@ -541,6 +570,51 @@ if (is_ajax()) {
         $(this).find('.modal-header #msdidstade').val(button.data('idstade'))
       });
       
+      $('#delstadetype').on('show.bs.modal', function(event) {
+        var button = $(event.relatedTarget)
+        $(this).find('.modal-header #msdidstadetype').val(button.data('idstadetype'))
+      });
+      
+     
+     $("#delstadetypesub").on('click', function(e) {
+        e.preventDefault();
+        $.ajax({
+          url: "include/function.php",
+          type: "POST",
+          async: true,
+          data: {
+            action: 'delstadetype',
+            msdidstadetype: $("#msdidstadetype").val(),
+          },
+          dataType: "json",
+          success: function(response) {
+            switch (response.data) {
+              case 'ok':
+                $.toast({
+                  heading: "Ajout/Modification",
+                  text: 'Réussit.',
+                  showHideTransition: 'slide',
+                  position: 'bottom-center',
+                  icon: 'success'
+                })
+                break;
+
+              default:
+                $.toast({
+                  heading: 'Warning',
+                  text: 'Echec !',
+                  showHideTransition: 'plain',
+                  position: 'bottom-center',
+                  icon: 'warning'
+                })
+            }
+          },
+        });
+        setTimeout(function() {
+          $('#ajax-content').load('ajax/admin.php');
+        }, 2000);
+      });
+
       
       $("#modstadetypesub").on('click', function(e) {
         e.preventDefault();
