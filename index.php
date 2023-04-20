@@ -198,7 +198,7 @@ if (!empty($token) && !empty($idrecup)) {
                 </div>
                 <div class="col-lg-6 d-flex align-items-center gradient-custom-2">
                   <div class="text-dark px-3 py-4 p-md-5 mx-md-4">
-                    <h4 class="mb-4">Bienvenue sur le site de reservation de stade de la ville de Bussy-Saint-Georges.
+                    <h4 class="mb-4" style="color:white">Bienvenue sur le site de reservation de stade de la ville de Bussy-Saint-Georges.
                     </h4>
                     <img src="./assets/_img/mairie_connexion_bussy.jpg" style="width: 400px;" alt="mairie">
                     <p class="small mb-0"> Retrouvez toutes les informations, services sportif dont vous avez besoin.</p>
