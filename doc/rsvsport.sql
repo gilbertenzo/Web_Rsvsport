@@ -76,7 +76,7 @@ CREATE TABLE `stadetype` (
   UNIQUE KEY `id_type_nom` (`id_type_stade`,`nom_type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-INSERT INTO `stadetype` (`id_type_stade`, `nom_type`) VALUES
+INSERT INTO `stadetype` (`id_type_stade`, `nom_type`, `type_actif`) VALUES
 (1,	'tennis', 1),
 (2,	'foot', 1),
 (3,	'rugby', 1);
