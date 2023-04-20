@@ -125,7 +125,7 @@ if (is_ajax()) {
 			$resultnomstade = $reqnomstadesql->fetch_assoc();
 			$stadename = $resultnomstade['id_stade'];
 
-			$sqlsubcote = "delete from event where id_user = '$id' and date_start = '$datestart' and date_end = '$dateend' and nom_stade = '$stadename'";
+			$sqlsubcote = "delete from event where id_user = '$id' and date_start = '$datestart' and date_end = '$dateend' and id_stade = '$stadename'";
 			if ($mysqli->query($sqlsubcote)) {
 				echo json_encode(["data" => "ok"]);
 				exit;
@@ -157,6 +157,38 @@ if (is_ajax()) {
 
 			$sqlsubcote = "update users set nom = '$munom', prenom = '$muprenom', email = '$muemail', tel = '$mutel', adresse = '$muaddresse', actif = '$muactif', id_groups = '$mugroup' where id_user = '$muiduser' ";
 			if ($mysqli->query($sqlsubcote)) {
+				echo json_encode(["data" => "ok"]);
+				exit;
+			} else {
+				echo json_encode(["data" => "ko"]);
+				exit;
+			}
+		}
+	}
+	
+	if ($action == 'majprof') {
+
+		if ($_SESSION['user']['authentification'] == "1") {
+
+			$speudol = $_POST['speudol'];
+			$nompl = $_POST['nompl'];
+			$emaill = $_POST['emaill'];
+			$sdsl = $_POST['dsl'];
+			$dfal = $_POST['dfal'];	
+			$iduser = $_SESSION['user']['id'];
+			
+			// Echap simple cotes
+			$search = array('\'');
+			$replace = array('\\\'');
+			$dsl = str_replace($search, $replace, $sdsl);
+
+			$sqlsubcote = "update users set nom = '$speudol', prenom = '$nompl', email = '$emaill', tel = '$dfal', adresse = '$dsl' where id_user = '$iduser' ";
+			if ($mysqli->query($sqlsubcote)) {
+			        $_SESSION['user']['nom'] = $speudol;
+				$_SESSION['user']['prenom'] = $nompl;
+				$_SESSION['user']['email'] = $emaill;
+				$_SESSION['user']['tel'] = $dfal;
+				$_SESSION['user']['adresse'] = str_replace("\\", "", $dsl);
 				echo json_encode(["data" => "ok"]);
 				exit;
 			} else {
@@ -211,7 +243,7 @@ if (is_ajax()) {
 			$msidstatde = $_POST['msidstatde'];
 			$smstype = $_POST['mstype'];
 			$msnom = $_POST['msnom'];
-			$msstatus = $_POST['msstatus'];
+			$msstatus = $_POST['mstadetypesstatus'];
 			$mslundi = $_POST['mslundi'];
 			$msmardi = $_POST['msmardi'];
 			$msmercredi = $_POST['msmercredi'];
@@ -314,6 +346,44 @@ if (is_ajax()) {
 			$msdidstade = $_POST['msdidstade'];
 
 			$sqlsubcote = "delete from stade where id_stade = '$msdidstade' ";
+			if ($mysqli->query($sqlsubcote)) {
+				echo json_encode(["data" => "ok"]);
+				exit;
+			} else {
+				echo json_encode(["data" => "ko"]);
+				exit;
+			}
+		}
+	}
+	
+	if ($action == 'modifstadetype') {
+
+		if ($_SESSION['user']['authentification'] == "1" && $_SESSION['user']['group'] == "admin") {
+
+			$mtidstatde = $_POST['mtidstatde'];
+            		$mtnomstade = $_POST['mtnomstade'];
+            		$mtstatussatde = $_POST['mtstatussatde'];
+
+			$sqlsubcote = "update stadetype set nom_type = '$mtnomstade', type_actif = '$mtstatussatde'  where id_type_stade = '$mtidstatde' ";
+			if ($mysqli->query($sqlsubcote)) {
+				echo json_encode(["data" => "ok"]);
+				exit;
+			} else {
+				echo json_encode(["data" => "ko"]);
+				exit;
+			}
+		}
+	}
+	
+	if ($action == 'addstadetype') {
+
+		if ($_SESSION['user']['authentification'] == "1" && $_SESSION['user']['group'] == "admin") {
+
+			$mtidstatde = $_POST['mtidstatde'];
+            		$mtnomstade = $_POST['mtnomstade'];
+            		$mtstatussatde = $_POST['mtstatussatde'];
+
+			$sqlsubcote = "insert into stadetype ( nom_type, type_actif ) values ('$mtnomstade','$mtstatussatde')";
 			if ($mysqli->query($sqlsubcote)) {
 				echo json_encode(["data" => "ok"]);
 				exit;

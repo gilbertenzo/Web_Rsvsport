@@ -45,10 +45,8 @@ if (is_ajax()) {
             </div>
 
             <div class="d-grid gap-2 col-6 mx-auto d-flex justify-content-between">
-              <button class="btn btn-danger bg-danger" type="button" data-bs-toggle="modal"
-                data-bs-target="#reinitpwd">Reinitialiser mot de passe</button>
-              <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#majprof">Mettre à
-                jour</button>
+              <button class="btn btn-danger bg-danger" type="button" data-bs-toggle="modal" data-bs-target="#reinitpwd">Reinitialiser mot de passe</button>
+              <button class="btn btn-primary" type="button" id="majprof">Mettre à jour</button>
 
             </div>
           </article>
@@ -73,39 +71,33 @@ if (is_ajax()) {
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="staticBackdropLabel">Confirmer la réinitialisation de votre mot de passe</h5>
+            <h5 class="modal-title" id="staticBackdropLabel">Réinitialisation de votre mot de passe ?</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary" id="subreinitpwd">Confirmer</button>
+            <button type="button" class="btn btn-danger" id="subreinitpwd">Confirmer</button>
           </div>
         </div>
       </div>
     </div>
 
     <script>
-      $('#info').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget)
-        $(this).find('.modal-body #commentcote').val(button.data('infocote'))
-      });
-      $('#mod').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget)
-        $(this).find('.modal-body #subcote').val(button.data('subcote'))
-        $(this).find('.modal-body #subid').val(button.data('id'))
-        $(this).find('.modal-body #subcommentcote').val(button.data('subinfocote'))
-      });
-    </script>
-
-    <script>
       $(document).ready(function () {
+      
+        // Scrool to top on page load
+       	$('html, body').animate({
+		scrollTop: '0px'
+        	},
+        1500);
+      
         $("#subreinitpwd").on('click', function (e) {
           e.preventDefault();
           $.ajax({
             url: "./include/function.php",
             type: "POST",
             async: true,
-            data: { action: "subreinitpwd", email: $("#rcemail").val() },
+            data: { action: "subreinitpwd", email: "<?php echo $_SESSION['user']['email']; ?>" },
             dataType: "json",
             success: function (response) {
               switch (response.data) {
@@ -122,6 +114,42 @@ if (is_ajax()) {
                 default:
                   $.toast({
                     heading: 'Envoye email pour reinitialiser votre mot de passe',
+                    text: 'Error !',
+                    position: 'bottom-center',
+                    showHideTransition: 'plain',
+                    icon: 'warning'
+                  })
+              }
+            },
+          });
+        setTimeout(function () {
+            $('#ajax-content').load('ajax/profil.php');
+          }, 2000);
+        });
+        
+        $("#majprof").on('click', function (e) {
+          e.preventDefault();
+          $.ajax({
+            url: "./include/function.php",
+            type: "POST",
+            async: true,
+            data: { action: "majprof", speudol: $("#speudol").val(), nompl: $("#nompl").val(), emaill: $("#emaill").val(), dsl: $("#dsl").val(), dfal: $("#dfal").val() },
+            dataType: "json",
+            success: function (response) {
+              switch (response.data) {
+                case 'ok':
+                  $.toast({
+                    heading: "Mise à jour profil",
+                    text: 'Réussit.',
+                    position: 'bottom-center',
+                    showHideTransition: 'slide',
+                    icon: 'success'
+                  })
+                  break;
+
+                default:
+                  $.toast({
+                    heading: 'Mise à jour profil',
                     text: 'Error !',
                     position: 'bottom-center',
                     showHideTransition: 'plain',

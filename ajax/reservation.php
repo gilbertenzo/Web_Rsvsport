@@ -18,14 +18,12 @@ if (is_ajax()) {
 
     $today = date("Y-m-d");
     $todays = strtotime("now");  
-    $pagename = basename(__FILE__, ".php");
+    $sportname = $_GET['sport'];
 
-    $sqllastdate = "select dateend from stade s INNER JOIN stadetype t on s.id_type_stade = t.id_type_stade where nom_type = '$pagename' order by dateend desc limit 1";
+    $sqllastdate = "select dateend from stade s INNER JOIN stadetype t on s.id_type_stade = t.id_type_stade where nom_type = '$sportname' order by dateend desc limit 1";
     $reqsqllastdate = $mysqli->query($sqllastdate) or die('Erreur ' . $sqllastdate . ' ' . $mysqli->error);
     $lastdateend = $reqsqllastdate->fetch_assoc();
     $Dateselect = getDatesFromRange($lastdateend['dateend']);
-
-
 
     ?>
 
@@ -34,9 +32,9 @@ if (is_ajax()) {
       <div class="row">
         <div class="col-md-8">
           <h3 class="pb-4 mb-4 fst-italic border-bottom">
-            <img src="./assets/_img/img_<?php echo $pagename; ?>_bassy.png" style="width: 50px;" alt="img">
+            <img src="./assets/_img/img_<?php echo $sportname; ?>_bassy.png" style="width: 50px;" alt="img">
             Reservation
-            <?php echo $pagename; ?>
+            <?php echo $sportname; ?>
           </h3>
 
           <article class="blog-post">
@@ -93,7 +91,7 @@ if (is_ajax()) {
                   // boucle sur tous les stades
                   foreach ($_SESSION['stade'] as $crow) {
 
-                    if ($crow['type'] == "$pagename") {
+                    if ($crow['type'] == "$sportname") {
 
                       // recupere le jour de la semaine de la date
                       $dateofjour = strftime("%A", strtotime("$row"));
@@ -181,9 +179,9 @@ if (is_ajax()) {
 
               foreach ($_SESSION['stade'] as $crow) {
 
-                if ($crow['type'] == "$pagename") {
+                if ($crow['type'] == "$sportname") {
 
-                  echo '<img src="./assets/_img/' . $pagename . '.png" class="rounded-circle img-cover card-img-top" style="width: 8%;"><a class="mb-0" href="#"> ' . $crow['nom'] . '</a><br>';
+                  echo '<img src="./assets/_img/' . $sportname . '.png" class="rounded-circle img-cover card-img-top" style="width: 8%;"><a class="mb-0" href="#"> ' . $crow['nom'] . '</a><br>';
 
                 }
               }
@@ -201,7 +199,7 @@ if (is_ajax()) {
                   $endcr = explode(' ', $row['date_end']);
                   if ($_SESSION['user']['id'] == $row['id_user']) {
 
-                    if ($dateck[0] >= $today && $row['type_stade'] == $pagename) {
+                    if ($dateck[0] >= $today && $row['type_stade'] == $sportname) {
                       echo '<b>- ' . $row['nom_stade'] . ' : </b>' . $row['date_start'] . ' - ' . $endcr[1] . '<br>';
 
                     }
@@ -267,6 +265,12 @@ if (is_ajax()) {
     <script>
 
       $(document).ready(function () {
+      
+        // Scrool to top on page load
+       	$('html, body').animate({
+		scrollTop: '0px'
+        	},
+        1500);
 
         $('body').removeClass("modal-open");
         $('.modal-backdrop').remove();
@@ -325,7 +329,7 @@ if (is_ajax()) {
           $('#calnba').bootstrapTable('hideLoading');
           $('#titlenba').removeClass('pb-5');
           $('#calnba').removeClass('hidden');
-        }, 2000);
+        }, 1000);
 
         $('#calnba').bootstrapTable('filterBy', {
           date: '<?php echo $today; ?>'
@@ -337,7 +341,7 @@ if (is_ajax()) {
             url: "include/function.php",
             type: "POST",
             async: true,
-            data: { action: "insertevent", typestade: "<?php echo $pagename; ?>", datestart: $("#datestart").val(), dateend: $("#dateend").val(), stadename: $("#stadename").val(), comment: $("#comment").val() },
+            data: { action: "insertevent", typestade: "<?php echo $sportname; ?>", datestart: $("#datestart").val(), dateend: $("#dateend").val(), stadename: $("#stadename").val(), comment: $("#comment").val() },
             dataType: "json",
             success: function (response) {
               switch (response.data) {
@@ -363,7 +367,7 @@ if (is_ajax()) {
             },
           });
           setTimeout(function () {
-            $('#ajax-content').load('ajax/<?php echo $pagename; ?>.php');
+            $('#ajax-content').load('ajax/reservation.php?sport=<?php echo $sportname; ?>');
           }, 2000);
         });
 
@@ -399,10 +403,9 @@ if (is_ajax()) {
             },
           });
           setTimeout(function () {
-            $('#ajax-content').load('ajax/<?php echo $pagename; ?>.php');
+            $('#ajax-content').load('ajax/reservation.php?sport=<?php echo $sportname; ?>');
           }, 2000);
         });
-
 
 
       });

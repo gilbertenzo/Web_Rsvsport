@@ -20,6 +20,16 @@ if ($mysqli->connect_error) {
   die('Erreur de connexion (' . $mysqli->connect_errno . ')' . $mysqli->connect_error);
 }
 
+//tab type stade
+$_SESSION['stadetype'] = array();
+$sqlstadetype = "select * from stadetype";
+$reqsqlstadetype = $mysqli->query($sqlstadetype) or die('Erreur ' . $sqlstadetype . ' ' . $mysqli->error);
+while ($row = mysqli_fetch_assoc($reqsqlstadetype)) {
+	if (!empty($row)) {
+		$_SESSION['stadetype'][] = $row;
+	}
+}
+
 // tab stade
 $_SESSION['stade'] = array();
 $_SESSION['stadeina'] = array();

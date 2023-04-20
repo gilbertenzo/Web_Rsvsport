@@ -133,6 +133,12 @@ if (is_ajax()) {
     <script>
 
       $(document).ready(function () {
+      
+        // Scrool to top on page load
+       	$('html, body').animate({
+		scrollTop: '0px'
+        	},
+        1500);
 
         $('body').removeClass("modal-open");
         $('.modal-backdrop').remove();

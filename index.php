@@ -56,9 +56,13 @@ if (!empty($token) && !empty($idrecup)) {
       <div class="site-mobile-menu-body">
         <ul class="site-nav-wrap">
           <li><a href="accueil.php" class="nav-link nav-link-mobile ajax active">Accueil</a></li>
-          <li><a href="tennis.php" class="nav-link nav-link-mobile ajax">Tennis</a></li>
-          <li><a href="rugby.php" class="nav-link nav-link-mobile ajax">Rugby</a></li>
-          <li><a href="foot.php" class="nav-link nav-link-mobile ajax">Football</a></li>
+          <?php
+          	foreach ($_SESSION['stadetype'] as $crow) {
+          	   if ( $crow['type_actif'] == '1' ) {
+                	echo '<li><a href="reservation.php?sport='. $crow['nom_type'] .'" class="nav-link nav-link-mobile ajax text-capitalize">'. $crow['nom_type'] .'</a></li>';
+               	   }
+                }
+          ?>
           <li><a href="profil.php" class="nav-link nav-link-mobile ajax">Profil</a></li>
 
           <?php if ($_SESSION['user']['authentification'] == "1" && $_SESSION['user']['group'] == "admin") { ?>
@@ -91,9 +95,13 @@ if (!empty($token) && !empty($idrecup)) {
                     </div>
                     <ul class="site-menu main-menu js-clone-nav d-none d-lg-block">
                       <li><a href="accueil.php" class="nav-link ajax active">Accueil</a></li>
-                      <li><a href="tennis.php" class="nav-link ajax">Tennis</a></li>
-                      <li><a href="rugby.php" class="nav-link ajax">Rugby</a></li>
-                      <li><a href="foot.php" class="nav-link ajax">Football</a></li>
+                      <?php
+                      	foreach ($_SESSION['stadetype'] as $crow) {
+                      	    if ( $crow['type_actif'] == '1' ) {
+                      		echo '<li><a href="reservation.php?sport='. $crow['nom_type'] .'" class="nav-link ajax text-capitalize">'. $crow['nom_type'] .'</a></li>';
+                      	    }
+                      	}
+                      ?>
                       <li><a href="profil.php" class="nav-link ajax">Profil</a></li>
 
                       <?php if ($_SESSION['user']['authentification'] == "1" && $_SESSION['user']['group'] == "admin") { ?>
@@ -405,7 +413,11 @@ if (!empty($token) && !empty($idrecup)) {
         }, 6000);
       });
 
-
+    $('html, body').animate({
+	scrollTop: '0px'
+        },
+        1500);
+     return false;
 
 
     });

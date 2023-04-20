@@ -30,6 +30,9 @@ if (is_ajax()) {
             <li class="nav-item" role="presentation">
               <button class="nav-link" id="stade-tab" data-bs-toggle="tab" data-bs-target="#stade" type="button" role="tab" aria-controls="stade" aria-selected="false">Stades</button>
             </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="stadet-tab" data-bs-toggle="tab" data-bs-target="#stadet" type="button" role="tab" aria-controls="stadet" aria-selected="false">Stade Type</button>
+            </li>
           </ul>
           <div class="tab-content" id="myTabContent">
             <div class="tab-pane fade show active" id="users" role="tabpanel" aria-labelledby="users-tab">
@@ -135,16 +138,23 @@ if (is_ajax()) {
                     } else {
                       $statuss = "Inactif";
                     }
+                    $lundi = substr($crow['lundi'], 0, 10).'...';
+                    $mardi = substr($crow['mardi'], 0, 10).'...';
+                    $mercredi = substr($crow['mercredi'], 0, 10).'...';
+                    $jeudi = substr($crow['jeudi'], 0, 10).'...';
+                    $vendredi = substr($crow['vendredi'], 0, 10).'...';
+                    $samedi = substr($crow['samedi'], 0, 10).'...';
+                    $dimanche = substr($crow['dimanche'], 0, 10).'...';
                     echo '<tr>
                     <td> ' . $crow['nom'] . ' </td>
                     <td> ' . $crow['type'] . ' </td>
-                    <td> ' . $crow['lundi'] . ' </td>
-                    <td> ' . $crow['mardi'] . ' </td>
-                    <td> ' . $crow['mercredi'] . ' </td>
-                    <td> ' . $crow['jeudi'] . ' </td>
-                    <td> ' . $crow['vendredi'] . ' </td>
-                    <td> ' . $crow['samedi'] . ' </td>
-                    <td> ' . $crow['dimanche'] . ' </td>
+                    <td> ' . $lundi   . ' </td>
+                    <td> ' . $mardi . ' </td>
+                    <td> ' . $mercredi . ' </td>
+                    <td> ' . $jeudi . ' </td>
+                    <td> ' . $vendredi . ' </td>
+                    <td> ' . $samedi . ' </td>
+                    <td> ' . $dimanche . ' </td>
                     <td> ' . $crow['dateend'] . ' </td>
                     <td> ' . $statuss . ' </td>
                     <td> 
@@ -160,6 +170,49 @@ if (is_ajax()) {
               </table>
 
             </div>
+            
+            <div class="tab-pane fade show" id="stadet" role="tabpanel" aria-labelledby="stadet-tab">
+
+            <br>
+              <div class="container">
+                <div class="row justify-content-end">
+                  <div class="col-xs-12 col-md-3 justify-content-end d-flex">
+                    <a data-bs-toggle="modal" data-ajaction="addstadetype" data-action="Ajouter type de stade" data-bs-target="#modstadetype" class="btn btn-outline-success bi-plus-circle-fill"> Ajouter un type</a>
+                  </div>
+                </div>
+              </div>
+              <br>
+              <table id="stadetypetable" class="hidden" data-classes="table table-hover table-sm">
+                <thead>
+                  <tr>
+                    <th data-field="sstnom" data-align="left">Type </th>
+                    <th data-field="sststate" data-align="left">Status </th>
+                    <th data-field="sstmod" data-align="center"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <?php
+
+                  foreach ($_SESSION['stadetype'] as $crow) {
+                    
+                    echo '<tr>
+                    <td> ' . $crow['nom_type'] . ' </td>';
+                    if ( $crow['type_actif'] == '1' ) {
+                    	echo '<td>Actif</td>';
+                    } else {
+                        echo '<td>Inactif</td>';
+                    }
+                    echo '<td> 
+                    	<a title="Modifier" data-bs-toggle="modal"  data-ajaction="modifstadetype" data-action="Modification type de stade" data-idstadetype="' . $crow['id_type_stade'] . '" data-nomtype="' . $crow['nom_type'] . '"  data-statustype="' . $crow['type_actif'] . '" data-bs-target="#modstadetype" class="btn btn-outline-info bi-gear-fill"></a>
+                    </td>
+                    
+                    </tr>';
+                  }
+
+                  ?>
+                </tbody>
+              </table>
+            <div>
           </div>
 
 
@@ -276,7 +329,7 @@ if (is_ajax()) {
       <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="staticBackdropLabel"><input type="text" class="form-control inputnob" id="muaction"><input type="text" class="form-control hidden" id="muajaction"><input type="text" class="form-control hidden" id="muiduser"></h5>
+            <h5 class="modal-title"><input type="text" class="form-control inputnob" id="muaction"><input type="text" class="form-control hidden" id="muajaction"><input type="text" class="form-control hidden" id="muiduser"></h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
@@ -311,7 +364,7 @@ if (is_ajax()) {
                 <div class="col-xs-12 col-6 mb-3">
                   <label for="recipient-name" class="col-form-label">Status:</label>
                   <select class="form-control cblue" id="muactif">
-		                  <option value='1'>actif</option>
+		      <option value='1'>actif</option>
                       <option value='0'>inactif</option>
                   </select>
                 </div>
@@ -333,12 +386,46 @@ if (is_ajax()) {
         </div>
       </div>
     </div>
+        
+    <div class="modal fade" id="modstadetype" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+             <h5 class="modal-title" id="staticBackdropLabel">
+              <input type="text" class="form-control inputnob" id="mtaction">
+              <input type="text" class="form-control hidden" id="mtajaction">
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">          
+            <div class="row justify-content-start">
+                <div class="col-xs-12 col-6 mb-3">
+                  <label for="recipient-name" class="col-form-label">Nom:</label>
+                    <input type="text" class="form-control" id="msnomstadetype">
+                    <input type="text" class="form-control hidden" id="msidstadetype">
+                </div>
+                <div class="col-xs-12 col-6 mb-3">
+                  <label for="recipient-name" class="col-form-label">Status:</label>
+                  <select class="form-control cblue" id="mttypeactif">
+		    <option value='1'>actif</option>
+                    <option value='0'>inactif</option>
+                  </select>
+                </div>
+             </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+            <button type="button" class="btn btn-primary" id="modstadetypesub">Modifier</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <div class="modal fade" id="deluser" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="staticBackdropLabel">Confirmation la suppression ? </h5>
+            <h5 class="modal-title">Confirmation la suppression ? </h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             <input type="text" class="form-control hidden" id="mudiduser">
           </div>
@@ -354,7 +441,7 @@ if (is_ajax()) {
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="staticBackdropLabel">Confirmation la suppression ? </h5>
+            <h5 class="modal-title">Confirmation la suppression ? </h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             <input type="text" class="form-control hidden" id="msdidstade">
           </div>
@@ -365,8 +452,15 @@ if (is_ajax()) {
         </div>
       </div>
     </div>
+    
 
     <script>
+    
+      // Scrool to top on page load
+      $('html, body').animate({
+	scrollTop: '0px'
+       	},
+      1500);
     
       $('body').removeClass("modal-open");
       $('.modal-backdrop').remove();
@@ -377,7 +471,7 @@ if (is_ajax()) {
         $('#userstable').bootstrapTable('hideLoading');
         $('#titlenba').removeClass('pb-5');
         $('#userstable').removeClass('hidden');
-      }, 2000);
+      }, 1000);
 
       $('#stadetable').bootstrapTable();
       $('#stadetable').bootstrapTable('showLoading');
@@ -385,7 +479,16 @@ if (is_ajax()) {
         $('#stadetable').bootstrapTable('hideLoading');
         $('#titlenba').removeClass('pb-5');
         $('#stadetable').removeClass('hidden');
-      }, 2000);
+      }, 1000);
+      
+      $('#stadetypetable').bootstrapTable();
+      $('#stadetypetable').bootstrapTable('showLoading');
+      setTimeout(function() {
+        $('#stadetypetable').bootstrapTable('hideLoading');
+        $('#titlenba').removeClass('pb-5');
+        $('#stadetypetable').removeClass('hidden');
+      }, 1000);
+      
 
       $('#moduser').on('show.bs.modal', function(event) {
         var button = $(event.relatedTarget)
@@ -418,6 +521,15 @@ if (is_ajax()) {
         $(this).find('.modal-body #msdimanche').val(button.data('dimanche'))
         $(this).find('.modal-body #msdateend').val(button.data('dateend'))
       });
+      
+      $('#modstadetype').on('show.bs.modal', function(event) {
+        var button = $(event.relatedTarget)
+        $(this).find('.modal-body #msnomstadetype').val(button.data('nomtype'))
+        $(this).find('.modal-body #msidstadetype').val(button.data('idstadetype'))
+        $(this).find('.modal-header #mtaction').val(button.data('action'))
+        $(this).find('.modal-header #mtajaction').val(button.data('ajaction'))
+        $(this).find('.modal-body #mttypeactif').val(button.data('statustype'))
+      });
 
       $('#deluser').on('show.bs.modal', function(event) {
         var button = $(event.relatedTarget)
@@ -427,6 +539,48 @@ if (is_ajax()) {
       $('#delstade').on('show.bs.modal', function(event) {
         var button = $(event.relatedTarget)
         $(this).find('.modal-header #msdidstade').val(button.data('idstade'))
+      });
+      
+      
+      $("#modstadetypesub").on('click', function(e) {
+        e.preventDefault();
+        $.ajax({
+          url: "include/function.php",
+          type: "POST",
+          async: true,
+          data: {
+            action: $("#mtajaction").val(),
+            mtidstatde: $("#msidstadetype").val(),
+            mtnomstade: $("#msnomstadetype").val(),
+            mtstatussatde: $("#mttypeactif").val()
+          },
+          dataType: "json",
+          success: function(response) {
+            switch (response.data) {
+              case 'ok':
+                $.toast({
+                  heading: "Ajout/Modification",
+                  text: 'Réussit.',
+                  showHideTransition: 'slide',
+                  position: 'bottom-center',
+                  icon: 'success'
+                })
+                break;
+
+              default:
+                $.toast({
+                  heading: 'Warning',
+                  text: 'Echec !',
+                  showHideTransition: 'plain',
+                  position: 'bottom-center',
+                  icon: 'warning'
+                })
+            }
+          },
+        });
+        setTimeout(function() {
+          $('#ajax-content').load('ajax/admin.php');
+        }, 2000);
       });
 
       $("#modusersub").on('click', function(e) {
