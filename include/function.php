@@ -344,7 +344,7 @@ if (is_ajax()) {
 				exit;
 			} else {
 				echo json_encode(["data" => "ko"]);
-				exit;
+				exit;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
 			}
 		}
 	}
