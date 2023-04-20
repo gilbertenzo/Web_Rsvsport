@@ -71,14 +71,15 @@ DROP TABLE IF EXISTS `stadetype`;
 CREATE TABLE `stadetype` (
   `id_type_stade` int(11) NOT NULL AUTO_INCREMENT,
   `nom_type` varchar(250) NOT NULL,
+  `type_actif` int(11) NOT NULL,
   PRIMARY KEY (`id_type_stade`),
   UNIQUE KEY `id_type_nom` (`id_type_stade`,`nom_type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO `stadetype` (`id_type_stade`, `nom_type`) VALUES
-(1,	'tennis'),
-(2,	'foot'),
-(3,	'rugby');
+(1,	'tennis', 1),
+(2,	'foot', 1),
+(3,	'rugby', 1);
 
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
