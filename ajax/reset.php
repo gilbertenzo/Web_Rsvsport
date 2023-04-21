@@ -16,7 +16,8 @@ if (is_ajax()) {
 	$token   = $_GET['token'];
 	$idrecup = $_GET['idrecup'];
 
-	$sqlcktoken = "select * from users where token = '$token' and email = '$idrecup' ";
+	// Le token n'est valide qu'une heure pour reseter son mot de passe !!!
+	$sqlcktoken = "select * from users where token = '$token' and email = '$idrecup' and actif = '1' and timestamp <= NOW() - INTERVAL 1 HOUR";
 
 	// si le token n'existe pas on retourne la requete vers la page d'accueil
 	if (!$cfg = $mysqli->query($sqlcktoken)) {
@@ -63,12 +64,14 @@ if (is_ajax()) {
                       <p>Initialisation / Reinitialisation de votre mot de passe.</p>
 
                       <div class="form-outline mb-2">
-                        <input type="password" id="password" class="form-control fadeIn second" placeholder="password" required>
+                        <input type="password" id="Password" class="form-control fadeIn second" placeholder="password" required>
                       </div>
+                      <div id="password-strength-status" class="pb-2"></div>
 
-                      <div class="form-outline mb-2">
-                        <input type="password" id="confirm_password" class="form-control fadeIn third" placeholder="confirmation password" required>
+                      <div class="form-outline mb-2 pb-2">
+                        <input type="password" id="ConfirmPassword" class="form-control fadeIn third disabled" disabled placeholder="confirmation password" required>
                       </div>
+                      <div style="margin-top: 7px;" id="CheckPasswordMatch" class="pb-1"></div>
 
                       <div class="text-center pt-1 mb-3 pb-1">
                         <button class="btn btn-primary btn-rses disabled mb-3" type="button" id="resetpasswd">Envoyer</button>
@@ -87,42 +90,55 @@ if (is_ajax()) {
 
 	<script>
 		$(document).ready(function() {
+		
+		
+			$("#Password").on('keyup', function(){
+    var number = /([0-9])/;
+    var alphabets = /([a-zA-Z])/;
+    var special_characters = /([~,!,@,#,$,%,^,&,*,-,_,+,=,?,>,<])/;
+    if ($('#Password').val().length < 6) {
+        $('#password-strength-status').removeClass();
+        $('#password-strength-status').addClass('weak-password');
+        $('#password-strength-status').html("Weak (should be atleast 6 characters.)");
+        $('#ConfirmPassword').prop('disabled', true);
+        $('#ConfirmPassword').addClass("disabled");
+        $('#resetpasswd').addClass("disabled");
+    } else {
+        if ($('#Password').val().match(number) && $('#Password').val().match(alphabets) && $('#Password').val().match(special_characters)) {
+            $('#password-strength-status').removeClass();
+            $('#password-strength-status').addClass('strong-password');
+            $('#password-strength-status').html("Strong");
+            $('#ConfirmPassword').removeAttr("disabled");
+            $('#ConfirmPassword').removeClass("disabled");
+        } else {
+            $('#password-strength-status').removeClass();
+            $('#password-strength-status').addClass('medium-password');
+            $('#password-strength-status').html("Medium (should include alphabets, numbers and special characters or some combination.)");
+            $('#ConfirmPassword').prop('disabled', true);
+            $('#ConfirmPassword').addClass("disabled");
+            $('#resetpasswd').addClass("disabled");
+        }
+    }
+  });
+  
+  
+		
+		        $("#ConfirmPassword").on('keyup', function(){
+    				var password = $("#Password").val();
+    				var confirmPassword = $("#ConfirmPassword").val();
+    				if (password != confirmPassword) {
+    				    $("#CheckPasswordMatch").html("Les deux mots de passe ne sont pas identique !").css("color","red");
+    				    $('#resetpasswd').addClass("disabled");
+    				} else {
+    				    $("#CheckPasswordMatch").html("Les deux mots de passe sont identique !").css("color","green");
+    				    $('#resetpasswd').removeClass("disabled");
+    				}
+   			});
+   
+   
+   
 
-			$.validator.addMethod("strongePassword", function(value) {
-				return /^[A-Za-z0-9\d=!\-@._*]*$/.test(value) && /[a-z]/.test(value) && /\d/.test(value) && /[A-Z]/.test(value);
-			}, "Le mot de passe doit contenir au moins 1 nombre, 1 majuscule et 1 misnucule");
-
-
-			$("#formresetpass").validate({
-				rules: {
-					password: {
-						required: true,
-						minlength: 8,
-						maxlength: 20,
-						strongePassword: true,
-					},
-					confirm_password: {
-						required: true,
-						equalTo: "#password",
-					},
-				},
-				messages: {
-					password: {
-						required: "Merci d'enter un mot de passe",
-						minlength: "Le mot de passe doit comporter au minimum 8 caractères",
-					},
-					confirm_password: {
-						required: "Merci d'enter un mot de passe",
-						equalTo: "Les mot de passe ne sont pas identique",
-					},
-				},
-				highlight: function(element) {
-					$('#resetpasswd').addClass("disabled");
-				},
-				unhighlight: function(element) {
-					$('#resetpasswd').removeClass("disabled");
-				},
-			});
+			
 
 			$("#resetpasswd").on('click', function() {
 				$.ajax({
@@ -131,8 +147,8 @@ if (is_ajax()) {
 					async: true,
 					data: {
 						action: "srpasswd",
-						password: $("#password").val(),
-						confirmpassword: $("#confirm_password").val(),
+						password: $("#Password").val(),
+						confirmpassword: $("#ConfirmPassword").val(),
 						token: <?php echo "'" . $token . "'"; ?>,
 						idrecup: <?php echo "'" . $idrecup . "'"; ?>
 					},
@@ -161,8 +177,8 @@ if (is_ajax()) {
 					},
 				});
 				setTimeout(function() {
-					$('#ajax-content').load('ajax/Accueil.php')
-				}, 6000);
+					$('#ajax-content').load('ajax/accueil.php')
+				}, 3000);
 			});
 
 		});

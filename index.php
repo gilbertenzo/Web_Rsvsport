@@ -410,7 +410,7 @@ if (!empty($token) && !empty($idrecup)) {
         });
         setTimeout(function() {
           location.reload()
-        }, 6000);
+        }, 4000);
       });
 
     $('html, body').animate({

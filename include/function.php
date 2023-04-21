@@ -10,6 +10,17 @@ if (is_ajax()) {
 
 	require('./config.php');
 	global $mysqli;
+	
+	// Pour l'envoi de mail 
+	include('Mail.php');
+	global $hostsmtp;
+	global $smtpcontact;
+	global $smtppassword;
+	global $smtpport;
+	
+	// Pour l'envoi de mail en html
+	include('Mail/mime.php');
+	
 
 	session_start();
 
@@ -380,7 +391,7 @@ if (is_ajax()) {
 				exit;
 			} else {
 				echo json_encode(["data" => "ko"]);
-				exit;
+				exit;smtpcontact
 			}
 		}
 	}
@@ -427,28 +438,34 @@ if (is_ajax()) {
 			exit;
 		}
 
-		$from = "enzo@dinetcola.fr";
-		$to = $emailrecup;
-		$subject_client = "[RSV-SPORT] - Reinitialisation de votre mot de passe";
-
-		// Headers
-		$headers = 'From: RSV-SPORT <enzo@dinetcola.fr>' . "\r\n";
-		$headers .= 'Content-Type: text/html; charset="utf-8"';
-		$headers .= "\r\n";
+		$from = $smtpcontact;
+		$to = $emailrecup;smtpcontact
+		$subject_client = "[RSV-SPORT] - Initialisation/Reinitialisation de votre mot de passe";
+		
+		// Adresse site
+		if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+    			$url = "https"; 
+  		} else {
+    			$url = "http";
+    		}
+		$url .= "://"; 
+    		$url .= $_SERVER['HTTP_HOST']; 
+    		$url .= str_replace("/include/function.php", "", $_SERVER['REQUEST_URI']);
 
 		// Message HTML
 		$msg_client .= "
-		<br> Bonjour, <br><br> Veuillez trouver ci-joint le lien afin de procèder à la réinitialisation de votre mot de passe  <br><br> <a href='https://enzo.dinetcola.fr/projet/rsvsport/index.php?idrecup=$emailrecup&token=$token'>Reinitialisation password</a><br><br> <strong>Merci </strong>" . "\r\n";
+		<br> Bonjour, <br><br> Veuillez trouver ci-joint le lien afin de procèder à la réinitialisation de votre mot de passe  <br> <span style='color:red'>/!\ Le lien n'est pas qu'un heure </span><br><br> <a href='$url/index.php?idrecup=$emailrecup&token=$token'>Reinitialisation password</a><br><br> <strong>Merci </strong>" . "\r\n";
 		$msg_client .= $content . "\r\n";
-
-		if (mail($to, $subject_client, $msg_client, $headers)) {
-			echo json_encode(["data" => "ok"]);
+		
+		$headers = array ('From' => $from, 'To' => $to, 'Subject' => $subject_client, 'Reply-To' => $from, 'MIME-Version' => 1, 'Content-Type' => 'text/html; charset="utf-8"');
+		$smtp = Mail::factory('smtp', array ('host' => $hostsmtp, 'port' => $smtpport, 'auth' => true, 'username' => $smtpcontact, 'password' => $smtppassword));
+		$mail = $smtp->send($to, $headers, $msg_client);
+		if (PEAR::isError($mail)) {
 			echo json_encode(["data" => "ok"]);
 		} else {
-			echo json_encode(["data" => "ko"]);
+			echo json_encode(["data" => "ok"]);
 		}
 		exit;
-
 	}
 
 	

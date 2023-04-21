@@ -400,3 +400,26 @@ textarea {
    }
 	
 }
+
+#password-strength-status {
+                padding: 0px 10px;
+                color: #FFFFFF;
+                border-radius: 4px;
+                margin-top: 5px;
+                margin-bottom: 10px;
+            }
+
+            .medium-password {
+                background-color: #b7d60a;
+                border: #BBB418 1px solid;
+            }
+
+            .weak-password {
+                background-color: #ce1d14;
+                border: #AA4502 1px solid;
+            }
+
+            .strong-password {
+                background-color: #12CC1A;
+                border: #0FA015 1px solid;
+            }

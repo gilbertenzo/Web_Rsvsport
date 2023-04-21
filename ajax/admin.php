@@ -88,7 +88,7 @@ if (is_ajax()) {
                     	if ( $crow['email'] == $_SESSION['user']['email'] ) {
                     	      echo '<a title="Supprimer" class="btn btn-outline-secondary bi-person-x-fill disabled" disabled></a>'; 
                     	} elseif ( $ckv !== false ) {
-                    	      echo '<a title="Impossible de supprimer des réservations existe pour cet utilisateur" class="btn btn-outline-danger bi-lock-fill disabled" disabled></a>'; 
+                    	      echo '<a title="Impossible de supprimer des réservations existe pour cet utilisateur" class="btn btn-outline-secondary bi-lock-fill"></a>'; 
                     	} else {
                     	      echo '<a title="Supprimer" data-bs-toggle="modal"  data-iduser="' . $crow['id_user'] . '"  data-bs-target="#deluser" class="btn btn-outline-danger bi-person-x-fill"></a>'; 
      			}
