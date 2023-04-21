@@ -10,17 +10,17 @@ if (is_ajax()) {
 
 	require('./config.php');
 	global $mysqli;
-	
+
 	// Pour l'envoi de mail 
 	include('Mail.php');
 	global $hostsmtp;
 	global $smtpcontact;
 	global $smtppassword;
 	global $smtpport;
-	
+
 	// Pour l'envoi de mail en html
 	include('Mail/mime.php');
-	
+
 
 	session_start();
 
@@ -34,11 +34,11 @@ if (is_ajax()) {
 		$piege = $_POST['piege'];
 		sleep(1);
 
-		if(!empty($piege)) {
+		if (!empty($piege)) {
 			echo json_encode(["data" => "ko"]);
 			exit;
 		}
-		
+
 		$sqlrecupauth = "select id_user, nom, prenom, password, email, token, tel, adresse, actif, nom_groups as groups ,timestamp from users u INNER JOIN groups g on u.id_groups = g.id_groups WHERE email = '$login' and actif = '1'";
 		$reqsqlrecupauth = $mysqli->query($sqlrecupauth) or die('Erreur ' . $sqlrecupauth . ' ' . $mysqli->error);
 		$authcheck = $reqsqlrecupauth->fetch_assoc();
@@ -79,13 +79,13 @@ if (is_ajax()) {
 			$sstadename = $_POST['stadename'];
 			$comment = $_POST['comment'];
 			$id = $_SESSION['user']['id'];
-			
+
 			// recupere l'id du type stade
 			$typestadesql = "select id_type_stade from stadetype where nom_type  = '$stypestade'";
 			$reqtypestadesql = $mysqli->query($typestadesql) or die('Erreur ' . $typestadesql . ' ' . $mysqli->error);
 			$resulttypestade = $reqtypestadesql->fetch_assoc();
 			$typestade = $resulttypestade['id_type_stade'];
-			
+
 			// recupere l'id du nom stade
 			$nomstadesql = "select id_stade from stade where nom  = '$sstadename'";
 			$reqnomstadesql = $mysqli->query($nomstadesql) or die('Erreur ' . $nomstadesql . ' ' . $mysqli->error);
@@ -129,7 +129,7 @@ if (is_ajax()) {
 			$dateend = $_POST['ddateend'];
 			$sstadename = $_POST['dstadename'];
 			$id = $_SESSION['user']['id'];
-			
+
 			// recupere l'id du nom stade
 			$nomstadesql = "select id_stade from stade where nom  = '$sstadename'";
 			$reqnomstadesql = $mysqli->query($nomstadesql) or die('Erreur ' . $nomstadesql . ' ' . $mysqli->error);
@@ -159,8 +159,8 @@ if (is_ajax()) {
 			$muaddresse = $_POST['muaddresse'];
 			$muactif = $_POST['muactif'];
 			$mugroup = $_POST['mugroup'];
-			
-			
+
+
 			// Echap simple cotes
 			$search = array('\'');
 			$replace = array('\\\'');
@@ -176,7 +176,7 @@ if (is_ajax()) {
 			}
 		}
 	}
-	
+
 	if ($action == 'majprof') {
 
 		if ($_SESSION['user']['authentification'] == "1") {
@@ -185,9 +185,9 @@ if (is_ajax()) {
 			$nompl = $_POST['nompl'];
 			$emaill = $_POST['emaill'];
 			$sdsl = $_POST['dsl'];
-			$dfal = $_POST['dfal'];	
+			$dfal = $_POST['dfal'];
 			$iduser = $_SESSION['user']['id'];
-			
+
 			// Echap simple cotes
 			$search = array('\'');
 			$replace = array('\\\'');
@@ -195,7 +195,7 @@ if (is_ajax()) {
 
 			$sqlsubcote = "update users set nom = '$speudol', prenom = '$nompl', email = '$emaill', tel = '$dfal', adresse = '$dsl' where id_user = '$iduser' ";
 			if ($mysqli->query($sqlsubcote)) {
-			        $_SESSION['user']['nom'] = $speudol;
+				$_SESSION['user']['nom'] = $speudol;
 				$_SESSION['user']['prenom'] = $nompl;
 				$_SESSION['user']['email'] = $emaill;
 				$_SESSION['user']['tel'] = $dfal;
@@ -263,13 +263,13 @@ if (is_ajax()) {
 			$mssamedi = $_POST['mssamedi'];
 			$msdimanche = $_POST['msdimanche'];
 			$msdateend = $_POST['msdateend'];
-			
+
 			// recupere l'id du type stade
 			$typestadesql = "select id_type_stade from stadetype where nom_type  = '$smstype'";
 			$reqtypestadesql = $mysqli->query($typestadesql) or die('Erreur ' . $typestadesql . ' ' . $mysqli->error);
 			$resulttypestade = $reqtypestadesql->fetch_assoc();
 			$mstype = $resulttypestade['id_type_stade'];
-			
+
 			// Echap simple cotes
 			$search = array('\'');
 			$replace = array('\\\'');
@@ -285,7 +285,6 @@ if (is_ajax()) {
 			if ($mysqli->query($sqlsubcote)) {
 				echo json_encode(["data" => "ok"]);
 				exit;
-			
 			} else {
 				echo json_encode(["data" => "ko"]);
 				exit;
@@ -308,7 +307,7 @@ if (is_ajax()) {
 			$mssamedi = $_POST['mssamedi'];
 			$msdimanche = $_POST['msdimanche'];
 			$msdateend = $_POST['msdateend'];
-			
+
 			// recupere l'id du type stade
 			$typestadesql = "select id_type_stade from stadetype where nom_type  = '$smstype'";
 			$reqtypestadesql = $mysqli->query($typestadesql) or die('Erreur ' . $typestadesql . ' ' . $mysqli->error);
@@ -359,7 +358,7 @@ if (is_ajax()) {
 			}
 		}
 	}
-		
+
 	if ($action == 'delstadetype') {
 
 		if ($_SESSION['user']['authentification'] == "1" && $_SESSION['user']['group'] == "admin") {
@@ -376,14 +375,14 @@ if (is_ajax()) {
 			}
 		}
 	}
-	
+
 	if ($action == 'modifstadetype') {
 
 		if ($_SESSION['user']['authentification'] == "1" && $_SESSION['user']['group'] == "admin") {
 
 			$mtidstatde = $_POST['mtidstatde'];
-            		$mtnomstade = $_POST['mtnomstade'];
-            		$mtstatussatde = $_POST['mtstatussatde'];
+			$mtnomstade = $_POST['mtnomstade'];
+			$mtstatussatde = $_POST['mtstatussatde'];
 
 			$sqlsubcote = "update stadetype set nom_type = '$mtnomstade', type_actif = '$mtstatussatde'  where id_type_stade = '$mtidstatde' ";
 			if ($mysqli->query($sqlsubcote)) {
@@ -391,18 +390,18 @@ if (is_ajax()) {
 				exit;
 			} else {
 				echo json_encode(["data" => "ko"]);
-				exit;smtpcontact
+				exit;
 			}
 		}
 	}
-	
+
 	if ($action == 'addstadetype') {
 
 		if ($_SESSION['user']['authentification'] == "1" && $_SESSION['user']['group'] == "admin") {
 
 			$mtidstatde = $_POST['mtidstatde'];
-            		$mtnomstade = $_POST['mtnomstade'];
-            		$mtstatussatde = $_POST['mtstatussatde'];
+			$mtnomstade = $_POST['mtnomstade'];
+			$mtstatussatde = $_POST['mtstatussatde'];
 
 			$sqlsubcote = "insert into stadetype ( nom_type, type_actif ) values ('$mtnomstade','$mtstatussatde')";
 			if ($mysqli->query($sqlsubcote)) {
@@ -421,7 +420,6 @@ if (is_ajax()) {
 		session_destroy();
 		echo json_encode(["data" => "ok"]);
 		exit;
-
 	}
 
 	if ($action == 'subreinitpwd') {
@@ -439,26 +437,26 @@ if (is_ajax()) {
 		}
 
 		$from = $smtpcontact;
-		$to = $emailrecup;smtpcontact
+		$to = $emailrecup;
 		$subject_client = "[RSV-SPORT] - Initialisation/Reinitialisation de votre mot de passe";
-		
+
 		// Adresse site
-		if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
-    			$url = "https"; 
-  		} else {
-    			$url = "http";
-    		}
-		$url .= "://"; 
-    		$url .= $_SERVER['HTTP_HOST']; 
-    		$url .= str_replace("/include/function.php", "", $_SERVER['REQUEST_URI']);
+		if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+			$url = "https";
+		} else {
+			$url = "http";
+		}
+		$url .= "://";
+		$url .= $_SERVER['HTTP_HOST'];
+		$url .= str_replace("/include/function.php", "", $_SERVER['REQUEST_URI']);
 
 		// Message HTML
 		$msg_client .= "
 		<br> Bonjour, <br><br> Veuillez trouver ci-joint le lien afin de procèder à la réinitialisation de votre mot de passe  <br> <span style='color:red'>/!\ Le lien n'est pas qu'un heure </span><br><br> <a href='$url/index.php?idrecup=$emailrecup&token=$token'>Reinitialisation password</a><br><br> <strong>Merci </strong>" . "\r\n";
 		$msg_client .= $content . "\r\n";
-		
-		$headers = array ('From' => $from, 'To' => $to, 'Subject' => $subject_client, 'Reply-To' => $from, 'MIME-Version' => 1, 'Content-Type' => 'text/html; charset="utf-8"');
-		$smtp = Mail::factory('smtp', array ('host' => $hostsmtp, 'port' => $smtpport, 'auth' => true, 'username' => $smtpcontact, 'password' => $smtppassword));
+
+		$headers = array('From' => $from, 'To' => $to, 'Subject' => $subject_client, 'Reply-To' => $from, 'MIME-Version' => 1, 'Content-Type' => 'text/html; charset="utf-8"');
+		$smtp = Mail::factory('smtp', array('host' => $hostsmtp, 'port' => $smtpport, 'auth' => true, 'username' => $smtpcontact, 'password' => $smtppassword));
 		$mail = $smtp->send($to, $headers, $msg_client);
 		if (PEAR::isError($mail)) {
 			echo json_encode(["data" => "ok"]);
@@ -468,7 +466,7 @@ if (is_ajax()) {
 		exit;
 	}
 
-	
+
 	if ($action == 'srpasswd') {
 
 		$password = $_POST['password'];
@@ -488,19 +486,15 @@ if (is_ajax()) {
 			} else {
 				echo json_encode(["data" => "ko"]);
 			}
-
 		} else {
 			echo json_encode(["data" => "ko"]);
 		}
 		exit;
-
 	}
 
 	echo json_encode(["data" => "ko"]);
-
 } else {
 	header('Location: ./index.php');
 }
 ?>
 
-?>
