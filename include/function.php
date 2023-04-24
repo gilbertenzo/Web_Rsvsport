@@ -108,12 +108,26 @@ if (is_ajax()) {
 		if ($_SESSION['user']['authentification'] == "1") {
 
 			$idevent = $_POST['idevent'];
+			// permet de s'assurer quel la reservation appartient bien à l'utilisateur connecté.
 			$id = $_SESSION['user']['id'];
-
-			$sqlsubcote = "delete from event where id_user = '$id' and id_event = '$idevent'";
-			if ($mysqli->query($sqlsubcote)) {
-				echo json_encode(["data" => "ok"]);
-				exit;
+			
+			// recupere la date_start de la reservation
+			$dseventsql = "select date_start from event where id_event = '$idevent'";
+			$reqdseventsql = $mysqli->query($dseventsql) or die('Erreur ' . $dseventsql . ' ' . $mysqli->error);
+			$resultdsevent = $reqdseventsql->fetch_assoc();
+			$dateck = strtotime(str_replace("h", ":", $resultdsevent['date_start']));
+			$today = strtotime("now");
+			
+			if ($dateck >= $today) {
+				// Suppression reservation apartenant à un utilisateur et date_start non dépassé
+				$sqlsubcote = "delete from event where id_user = '$id' and id_event = '$idevent' and  timestamp <= NOW()";
+				if ($mysqli->query($sqlsubcote)) {
+					echo json_encode(["data" => "ok"]);
+					exit;
+				} else {
+					echo json_encode(["data" => "ko"]);
+					exit;
+				}
 			} else {
 				echo json_encode(["data" => "ko"]);
 				exit;
@@ -135,11 +149,23 @@ if (is_ajax()) {
 			$reqnomstadesql = $mysqli->query($nomstadesql) or die('Erreur ' . $nomstadesql . ' ' . $mysqli->error);
 			$resultnomstade = $reqnomstadesql->fetch_assoc();
 			$stadename = $resultnomstade['id_stade'];
+			
+			// recupere la date_start de la reservation
+			$dseventsql = "select date_start from event where id_event = '$stadename'";
+			$reqdseventsql = $mysqli->query($dseventsql) or die('Erreur ' . $dseventsql . ' ' . $mysqli->error);
+			$resultdsevent = $reqdseventsql->fetch_assoc();
+			$dateck = strtotime(str_replace("h", ":", $resultdsevent['date_start']));
+			$today = strtotime("now");
 
-			$sqlsubcote = "delete from event where id_user = '$id' and date_start = '$datestart' and date_end = '$dateend' and id_stade = '$stadename'";
-			if ($mysqli->query($sqlsubcote)) {
-				echo json_encode(["data" => "ok"]);
-				exit;
+			if ($dateck >= $today) {
+				$sqlsubcote = "delete from event where id_user = '$id' and date_start = '$datestart' and date_end = '$dateend' and id_stade = '$stadename'";
+				if ($mysqli->query($sqlsubcote)) {
+					echo json_encode(["data" => "ok"]);
+					exit;
+				} else {
+					echo json_encode(["data" => "ko"]);
+					exit;
+				}
 			} else {
 				echo json_encode(["data" => "ko"]);
 				exit;
