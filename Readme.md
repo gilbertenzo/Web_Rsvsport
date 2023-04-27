@@ -10,7 +10,7 @@ Les sport proposés sont le tennis, le rugby et le foot.
 Prérequis de la mise en ligne 
 --------------
 
-Apache2, php7.4 minimum, mariadb-server
+Apache2, php7.4 minimum, mariadb-server, php-mysql
 
 Prérequis de l'utilisation  
 --------------
