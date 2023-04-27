@@ -7,11 +7,15 @@ de se connecter et d'émettre une réservation aux sport proposés.
 Les sport proposés sont le tennis, le rugby et le foot.
 
 
-Prérequis
+Prérequis de la mise en ligne 
 --------------
 
 Apache2, php7.4 minimum, mariadb-server
 
+Prérequis de l'utilisation  
+--------------
+
+Wampserver, Visual Studio Code
 Frameworks utilisés
 --------------------
 
